@@ -12,7 +12,8 @@ Model name is converted to lowercase for the collection name:
 """
 
 from pydantic import BaseModel, Field
-from typing import Optional
+from typing import Optional, Literal
+from datetime import datetime
 
 # Example schemas (replace with your own):
 
@@ -38,11 +39,20 @@ class Product(BaseModel):
     category: str = Field(..., description="Product category")
     in_stock: bool = Field(True, description="Whether product is in stock")
 
-# Add your own schemas here:
 # --------------------------------------------------
+# Crypto Prediction Tournament App Schemas
 
-# Note: The Flames database viewer will automatically:
-# 1. Read these schemas from GET /schema endpoint
-# 2. Use them for document validation when creating/editing
-# 3. Handle all database operations (CRUD) directly
-# 4. You don't need to create any database endpoints!
+class Tournament(BaseModel):
+    title: str = Field(..., description="Tournament name")
+    asset: str = Field(..., description="Crypto asset symbol, e.g., BTCUSDT")
+    start_time: datetime = Field(..., description="UTC start time")
+    end_time: datetime = Field(..., description="UTC end time")
+    entry_fee: float = Field(0, ge=0, description="Entry fee in chips")
+    prize_pool: float = Field(0, ge=0, description="Total prize pool in chips")
+    status: Literal['upcoming','live','finished'] = Field('upcoming', description="Tournament status")
+
+class Prediction(BaseModel):
+    tournament_id: str = Field(..., description="Reference to tournament _id as string")
+    user: str = Field(..., description="Display name or wallet")
+    direction: Literal['up','down'] = Field(..., description="Predicted movement direction")
+    amount: float = Field(0, ge=0, description="Staked chips")
